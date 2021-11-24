@@ -1,0 +1,22 @@
+{
+  "name": "ama-romach-cart",
+  "version": "1.0.0",
+  "description": "cart for ama-romach",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IdanKatzav/ama-romach-cart.git"
+  },
+  "author": "Idan Katzav",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/IdanKatzav/ama-romach-cart/issues"
+  },
+  "homepage": "https://github.com/IdanKatzav/ama-romach-cart#readme",
+  "dependencies": {
+    "typescript": "^4.5.2"
+  }
+}
