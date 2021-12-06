@@ -1,15 +1,15 @@
-import { BehaviorSubject, Observable, from, reduce } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { Product } from './models/product';
 
 import { ProductInCart } from './models/product-in-cart';
 
 export class Cart {
 	private itemsInList: BehaviorSubject<ProductInCart>;
-	private productsInStore: Observable<Product>;
+	private productsInStore: Observable<Product[]>;
 
 	constructor(products: Product[]) {
 		this.itemsInList = new BehaviorSubject<ProductInCart>({});
-		this.productsInStore = from<Product[]>((products));
+		this.productsInStore = of(products);
 	}
 
 	addProduct(productName: string, amount: number) {
@@ -18,7 +18,7 @@ export class Cart {
 		this.itemsInList.next(items);
 	}
 
-	removeProduct(productName: string): void {
+	removeProduct(productName: string) {
 		let items = this.itemsInList.getValue();
 		delete items[productName];
 		this.itemsInList.next(items);
@@ -30,21 +30,24 @@ export class Cart {
 		this.itemsInList.next(items);
 	}
 
+	//TODO: try do this with combine latest
 	getTotalPrice(): number {
 		let totalPrice: number = 0;
-		this.productsInStore.pipe(
-			reduce((accumulatedPrice, currentProduct) => {
-				accumulatedPrice += currentProduct.price *
-					(this.itemsInList.getValue()[currentProduct.name] || 0);
-				return accumulatedPrice;
-			}, 0)).subscribe({
-				next(price) { totalPrice = price; },
-				error(error) { console.log(error) }
-			});
+		let items: BehaviorSubject<ProductInCart> = this.itemsInList;
+		this.productsInStore.subscribe({
+			next(products) {
+				totalPrice = products.reduce((accumulatedPrice, currentProduct) => {
+					accumulatedPrice += currentProduct.price *
+						(items.getValue()[currentProduct.name] || 0);
+					return accumulatedPrice;
+				}, 0);
+			},
+			error(error) { console.log(error) }
+		});
 		return totalPrice;
 	}
 
-	checkout(): void {
+	checkout() {
 		this.itemsInList.next({});
 	}
 }
